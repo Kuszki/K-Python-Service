@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+		<meta http-equiv="Content-Language" content="pl">
+		<meta name="Author" content='Łukasz "Kuszki" Dróżdż'>
+
+		<link rel="stylesheet" type="text/css" href="main.css"/>
+
+		<title>System zarządzania dokumentami</title>
+
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+		<script src="main.js"></script>
+		<script src="index.js"></script>
+
+		<script> $(document).ready(onLoad); </script>
+		<script> $(document).ready(checkLogon); </script>
+
+	</head>
+	<body>
+
+		<header>
+			<p>Strona główna</p>
+			<nav>
+				<a id="logout" href="javascript:void(0)" onclick="onLogout()">Wyloguj</a>
+			</nav>
+		</header>
+
+		<menu>
+			<nav>
+
+			</nav>
+		</menu>
+
+		<section id="graph">
+			<canvas id="plot"></canvas>
+		</section>
+
+		<section min-height="400px">
+			<div id="temps" class="tabs"></div>
+			<div id="system" class="tabs"></div>
+		</section>
+
+		<footer id="toast"></footer>
+
+	</body>
+</html>

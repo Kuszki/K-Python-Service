@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+		<meta http-equiv="Content-Language" content="pl">
+		<meta name="Author" content='Łukasz "Kuszki" Dróżdż'>
+
+		<link rel="stylesheet" type="text/css" href="main.css"/>
+
+		<title>System zarządzania dokumentami</title>
+
+		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+		<script src="main.js"></script>
+		<script src="logon.js"></script>
+
+		<script> $(document).ready(onLoad); </script>
+		<script> $(document).ready(checkLogon); </script>
+
+	</head>
+	<body>
+
+		<header>
+			<p>Panel logowania</p>
+			<nav>
+				<a id="logout" href="javascript:void(0)" onclick="onLogout()">Wyloguj</a>
+			</nav>
+		</header>
+
+		<menu>
+			<nav>
+
+			</nav>
+		</menu>
+
+		<section id="form">
+			<form id="login" action="logon.var" method="post">
+				<label for="user">Login:</label>
+				<input type="text" id="user" name="user">
+				<br>
+				<label for="pass">Hasło:</label>
+				<input type="password" id="pass" name="pass">
+				<br>
+				<input id="submit" type="submit" value="Zaloguj">
+			</form>
+		</section>
+
+		<footer id="toast"></footer>
+
+	</body>
+</html>
