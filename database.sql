@@ -1,0 +1,185 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+CREATE DATABASE IF NOT EXISTS `docs` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `docs`;
+
+DROP TABLE IF EXISTS `documents`;
+CREATE TABLE `documents` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(256) NOT NULL,
+  `date_add` date NOT NULL DEFAULT current_timestamp(),
+  `date_cre` date NOT NULL,
+  `date_mod` date NOT NULL DEFAULT current_timestamp(),
+  `user_add` int(10) UNSIGNED NOT NULL,
+  `user_mod` int(10) UNSIGNED NOT NULL,
+  `type_id` int(11) UNSIGNED NOT NULL,
+  `path_id` int(11) UNSIGNED NOT NULL,
+  `status_id` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE `groups` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `comment` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `paths`;
+CREATE TABLE `paths` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `privileges`;
+CREATE TABLE `privileges` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `path` int(10) UNSIGNED NOT NULL,
+  `grp` int(10) UNSIGNED NOT NULL,
+  `can_view` tinyint(1) NOT NULL DEFAULT 0,
+  `can_add` tinyint(1) NOT NULL DEFAULT 0,
+  `can_mod` tinyint(1) NOT NULL DEFAULT 0,
+  `can_move` tinyint(1) NOT NULL DEFAULT 0,
+  `can_status` tinyint(1) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `statuses`;
+CREATE TABLE `statuses` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `comment` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `types_main`;
+CREATE TABLE `types_main` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(2) NOT NULL,
+  `comment` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `types_sub`;
+CREATE TABLE `types_sub` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(2) NOT NULL,
+  `type` int(11) UNSIGNED NOT NULL,
+  `comment` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE `users` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(64) NOT NULL,
+  `pass` varchar(64) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+DROP TABLE IF EXISTS `user_groups`;
+CREATE TABLE `user_groups` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `usr` int(10) UNSIGNED NOT NULL,
+  `grp` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+ALTER TABLE `documents`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`),
+  ADD KEY `TYPE` (`type_id`),
+  ADD KEY `PATH` (`path_id`),
+  ADD KEY `STATUS` (`status_id`),
+  ADD KEY `USERADD` (`user_add`),
+  ADD KEY `USERMOD` (`user_mod`);
+
+ALTER TABLE `groups`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`);
+
+ALTER TABLE `paths`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`);
+
+ALTER TABLE `privileges`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `COMBO` (`path`,`grp`),
+  ADD KEY `PATH` (`path`),
+  ADD KEY `GRP` (`grp`);
+
+ALTER TABLE `statuses`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`);
+
+ALTER TABLE `types_main`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`);
+
+ALTER TABLE `types_sub`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`),
+  ADD KEY `TYPE` (`type`);
+
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `NAME` (`name`);
+
+ALTER TABLE `user_groups`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `COMBO` (`usr`,`grp`),
+  ADD KEY `USR` (`usr`),
+  ADD KEY `GRP` (`grp`);
+
+
+ALTER TABLE `documents`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `groups`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `paths`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `privileges`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `statuses`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `types_main`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `types_sub`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `users`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `user_groups`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE `documents`
+  ADD CONSTRAINT `DOC_PATH_REL` FOREIGN KEY (`path_id`) REFERENCES `paths` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `DOC_STATUS_REL` FOREIGN KEY (`status_id`) REFERENCES `statuses` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `DOC_TYPE_REL` FOREIGN KEY (`type_id`) REFERENCES `types_sub` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `DOC_USERADD_REL` FOREIGN KEY (`user_add`) REFERENCES `users` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `DOC_USERMOD_REL` FOREIGN KEY (`user_mod`) REFERENCES `users` (`id`) ON UPDATE CASCADE;
+
+ALTER TABLE `privileges`
+  ADD CONSTRAINT `PRIV_GRP_REL` FOREIGN KEY (`grp`) REFERENCES `groups` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `PRIV_PATH_REL` FOREIGN KEY (`path`) REFERENCES `paths` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `types_sub`
+  ADD CONSTRAINT `TYP_SUB_REL` FOREIGN KEY (`type`) REFERENCES `types_main` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE `user_groups`
+  ADD CONSTRAINT `UG_GRP_REL` FOREIGN KEY (`grp`) REFERENCES `groups` (`id`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `UG_USR_REL` FOREIGN KEY (`usr`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
