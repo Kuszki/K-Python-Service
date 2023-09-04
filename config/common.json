@@ -8,6 +8,8 @@
 	"/main.css",
 	"/main.js",
 
+	"/help.html",
+
 	"/islogon.var",
 	"/getuser.var"
 ]

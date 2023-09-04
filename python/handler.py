@@ -175,7 +175,7 @@ class httpHandler(BaseHTTPRequestHandler):
 
 		if not path or path == "/": path = "/index.html"
 
-		if not logged and path.endswith(".html"): return "/logon.html"
+		if not self.get_Prev(path, logged) and path.endswith(".html"): return "/logon.html"
 		elif logged and path == "/logon.html": return "/index.html"
 		else: return path
 
