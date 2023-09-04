@@ -1,0 +1,18 @@
+[
+	{
+		"dir": "styles",
+		"list": [ ".css" ]
+	},
+	{
+		"dir": "scripts",
+		"list": [ ".js" ]
+	},
+	{
+		"dir": "images",
+		"list": [ ".ico", ".svg", ".jpeg", ".jpg", ".gif", ".bmp" ]
+	},
+	{
+		"dir": "slites",
+		"list": [ ".html", ".htm" ]
+	}
+]

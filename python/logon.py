@@ -6,6 +6,43 @@ from threading import RLock
 
 import uuid, ssl, sys, os
 
+class httpSession:
+
+	def __init__(self, name, user, uid, addr, admin = False, timeout = 0):
+
+		self.name = name
+		self.dbid = user
+		self.uuid = uid
+		self.addr = addr
+		self.admin = admin
+
+		self.timeout = timedelta(minutes = 5) if timeout <= 0 else timedelta(minutes = timeout)
+		self.time = datetime.now()
+
+	def is_expired(self):
+
+		return self.time + self.timeout < datetime.now()
+
+	def is_admin(self):
+
+		return self.admin and self.is_valid()
+
+	def is_valid(self):
+
+		return self.parent.validate(self.name, self.uuid, self.addr)
+
+	def on_refresh(self):
+
+		self.time = datetime.now()
+
+	def get_expdate(self):
+
+		return self.time + self.timeout
+
+	def get_expsecs(self):
+
+		return (self.get_expdate() - datetime.now()).seconds
+
 class httpLogon:
 
 	STR_ERROR_PASSWD = "Wprowadzono błędną nazwę użytkownika lub hasło"
@@ -23,31 +60,44 @@ class httpLogon:
 		self.locker = RLock()
 		self.sessions = dict()
 
+		httpSession.parent = self
+
+	def session(self, user, uid, addr):
+
+		with self.locker:
+
+			try: obj = self.sessions[user]
+			except: return None
+
+			if obj.uuid == uid and obj.addr == addr:
+				return obj
+
+		return None
+
+
 	def validate(self, user, uid, addr):
+
+		if not user or not addr or not uid: return False
 
 		with self.locker:
 
 			if not user in self.sessions: return False
-			else:
-				session = self.sessions[user]
-				now = datetime.now()
+			else: session = self.sessions[user]
 
-			if session["time"] + self.timeout < now:
-				del self.sessions[user]
-				return False
+			if session.is_expired(): return False
 
-			if addr != session["addr"]: return False
-			elif uid != session["uuid"]: return False
-			else: session["time"] = now; return True
+			if addr != session.addr: return False
+			elif uid != session.uuid: return False
+			else: return True
 
 	def login(self, user, addr, passwd):
 
+		if not user or not addr or not passwd: raise Exception(403, self.STR_ERROR_PASSWD)
+
 		with self.locker:
 
-			now = datetime.now()
-
 			if user in self.sessions:
-				if self.sessions[user]["time"] + self.timeout < now: del self.sessions[user]
+				if self.sessions[user].is_expired(): del self.sessions[user]
 				else: raise Exception(403, self.STR_ERROR_MULTI)
 
 			if type(passwd) == str: passwd = passwd.encode("utf-8")
@@ -56,7 +106,7 @@ class httpLogon:
 			cur = self.database.cursor(buffered = True)
 
 			try:
-				query = "SELECT id FROM users WHERE name = %s AND pass = %s";
+				query = "SELECT id, admin, timeout FROM users WHERE name = %s AND pass = %s";
 				cur.execute(query, (user, passwd))
 				rows = cur.fetchall()
 
@@ -64,18 +114,19 @@ class httpLogon:
 			finally: cur.close()
 
 			if len(rows) != 1: raise Exception(403, self.STR_ERROR_PASSWD)
-			else: uid = str(uuid.uuid4())
+			else:
+				etime = int(rows[0][2])
+				admin = bool(rows[0][1])
+				dbid = int(rows[0][0])
+				uid = str(uuid.uuid4())
 
-			session = dict()
-			session["uuid"] = uid
-			session["addr"] = addr
-			session["time"] = now
-
-			self.sessions[user] = session
+			self.sessions[user] = httpSession(user, dbid, uid, addr, admin, etime)
 
 			return "text/plain", self.STR_SUCCESS_LOGIN, { "session": uid }
 
 	def logout(self, user):
+
+		if not user: raise Exception(403, self.STR_ERROR_NOTLOG)
 
 		with self.locker:
 

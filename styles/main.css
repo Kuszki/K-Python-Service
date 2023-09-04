@@ -3,6 +3,11 @@
 	box-sizing: border-box;
 }
 
+html
+{
+	min-height: 100%;
+}
+
 body
 {
 	margin-top: 85px;
@@ -114,6 +119,16 @@ section
 	padding: 10px;
 
 	text-align: justify;
+}
+
+section.center
+{
+	text-align: center;
+	display: flex;
+	padding: 0px;
+	min-height: 70vh;
+	justify-content: center;
+	align-items: center;
 }
 
 th, td

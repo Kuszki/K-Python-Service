@@ -65,7 +65,7 @@ function onLogout()
 	if (set_locked) return;
 	else set_locked = true;
 
-	$.when($.get('logout.var'))
+	$.when($.get('/logout.var'))
 	.done(function(msg)
 	{
 		showToast(msg);
@@ -73,8 +73,7 @@ function onLogout()
 	})
 	.fail(function(msg)
 	{
-		if (!msg.hasOwnProperty('responseText')) onError('');
-		else onMessage(msg.responseText);
+		makeRedirect('/');
 	});
 }
 
@@ -130,14 +129,15 @@ function genHash(string)
 	return hash;
 }
 
-function checkLogon()
+function checkLogon(name)
 {
-	$.when($.get('islogon.var'))
+	$.when($.get('/islogon.var'))
 	.done(function(msg)
 	{
-		var obj = document.getElementById('logout');
+		const obj = document.getElementById(name);
 
-		if (msg == "False") obj.style.display = "none";
+		if (msg == 'False') obj.style.display = 'none';
+		else obj.style.removeProperty("display");
 	})
 }
 

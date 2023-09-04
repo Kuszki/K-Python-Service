@@ -1,19 +1,20 @@
 const errors =
 {
 	'empty': 'Wprowadź nazwę użytkownika oraz hasło',
+	'login': 'Nie udało się zalogować do systemu'
 };
 
 function onLoad()
 {
 	$.ajaxSetup({ 'timeout': 5000 });
 
-	$.when($.get('getuser.var'))
+	$.when($.get('/getuser.var'))
 	.done(function(msg)
 	{
-		var user = document.getElementById('user');
+		const user = document.getElementById('user');
 
 		user.value = msg;
-		user.disabled = true;
+		user.readOnly = true;
 	})
 
 	$("#login").on("submit", function(event)
@@ -37,7 +38,6 @@ function onLogin()
 	}
 	else
 	{
-		submit.disabled = true;
 		set_locked = true;
 	}
 
@@ -49,7 +49,7 @@ function onLogin()
 
 	$.when($.ajax(
 	{
-		'url': 'logon.var',
+		'url': '/logon.var',
 		'type': 'POST',
 		'contentType': 'application/json',
 		'data': JSON.stringify(data)
@@ -61,9 +61,7 @@ function onLogin()
 	})
 	.fail(function(msg)
 	{
-		if (!msg.hasOwnProperty('responseText')) onError('');
+		if (!msg.hasOwnProperty('responseText')) onError('login');
 		else onMessage(msg.responseText);
-
-		submit.disabled = false;
 	});
 }
