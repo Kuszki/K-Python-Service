@@ -131,9 +131,37 @@ section.center
 	align-items: center;
 }
 
-th, td
+div.center
 {
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+table
+{
+	border-collapse: collapse;
+	text-align: center;
+
+	min-width: 90%;
+	margin: auto;
+}
+
+table td, table th
+{
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
 	padding: 5px;
+}
+
+table tr:first-child th
+{
+	border-top: 0;
+}
+
+table tr:last-child td
+{
+	border-bottom: 0;
 }
 
 footer

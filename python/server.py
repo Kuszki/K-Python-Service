@@ -1,6 +1,7 @@
 from http.server import ThreadingHTTPServer
 
 from handler import httpHandler
+from fsystem import fileSystem
 from logon import httpLogon
 
 import ssl, sys, os, json
@@ -16,6 +17,7 @@ server = ThreadingHTTPServer(("localhost", 8081), httpHandler)
 
 server.socket = ssl_context.wrap_socket(server.socket, server_side = True)
 server.logon = httpLogon(db_config)
+server.fsystem = fileSystem("/data/Inne/test_docs/", db_config)
 server.handlers = dict()
 
 server.common = json.load(open("config/common.json", "r"))
@@ -28,6 +30,8 @@ server.handlers["/logout.var"] = lambda u, p, d, c, i: server.logon.logout(u.nam
 
 server.handlers["/islogon.var"] = lambda u, p, d, c, i: ("text/plain", u.is_valid() if u else False, None)
 server.handlers["/getuser.var"] = lambda u, p, d, c, i: ("text/plain", u.name if u else i.name if i else str(), None)
+
+server.handlers["/getlist.var"] = lambda u, p, d, c, i: ("text/json", json.dumps(server.fsystem.getList(p), default = str), None)
 
 try: server.serve_forever()
 except KeyboardInterrupt: pass

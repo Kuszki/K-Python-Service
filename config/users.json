@@ -2,5 +2,9 @@
 	"/index.html",
 	"/index.js",
 
-	"/logout.var"
+	"/browse.html",
+	"/browse.js",
+
+	"/logout.var",
+	"/getlist.var"
 ]

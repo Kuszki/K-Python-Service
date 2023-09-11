@@ -57,7 +57,7 @@ function onLogin()
 	.done(function(msg)
 	{
 		showToast(msg);
-		makeRedirect('/');
+		makeRedirect();
 	})
 	.fail(function(msg)
 	{

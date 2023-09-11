@@ -79,7 +79,7 @@ class httpHandler(BaseHTTPRequestHandler):
 		print("send_Error: ", exc)
 		print(traceback.format_exc())
 
-		if len(exc.args) == 3:
+		if len(exc.args) >= 2:
 			try: code = int(exc.args[0])
 			except: code = self.INT_ERROR_DEFAULT
 
@@ -204,7 +204,7 @@ class httpHandler(BaseHTTPRequestHandler):
 
 		if not self.get_Prev(path, log, adm):
 			return self.send_Error(Exception(403, self.STR_ERROR_403, path))
-		elif user != None: user.on_refresh()
+		elif user != None and log: user.on_refresh()
 
 		try:
 
@@ -254,7 +254,7 @@ class httpHandler(BaseHTTPRequestHandler):
 
 		if not self.get_Prev(path, log, adm):
 			return self.send_Error(Exception(403, self.STR_ERROR_403, path))
-		elif user != None: user.on_refresh()
+		elif user != None and log: user.on_refresh()
 
 		if path in self.server.handlers:
 

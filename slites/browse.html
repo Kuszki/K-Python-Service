@@ -12,7 +12,7 @@
 		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 
 		<script src="/main.js"></script>
-		<script src="/index.js"></script>
+		<script src="/browse.js"></script>
 
 		<script> $(document).ready(onLoad); </script>
 
@@ -20,7 +20,7 @@
 	<body>
 
 		<header>
-			<p>Strona główna</p>
+			<p>Lista obiektów</p>
 			<nav>
 				<a href="javascript:void(0)" onclick="onLogout()">Wyloguj</a>
 			</nav>
@@ -40,7 +40,11 @@
 		</menu>
 
 		<section>
+			<div id="list"></div>
+		</section>
 
+		<section>
+			<div class="center" id="page"></div>
 		</section>
 
 		<footer id="toast"></footer>

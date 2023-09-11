@@ -77,12 +77,13 @@ function onLogout()
 	});
 }
 
-function makeRedirect(to, time = 3000)
+function makeRedirect(to = null, time = 3000)
 {
 	if (time <= 0) window.location.replace(to);
 	else setTimeout(function()
 	{
-		window.location.replace(to);
+		if (to == null) window.location.reload();
+		else window.location.replace(to);
 	}, time);
 }
 
@@ -176,3 +177,37 @@ function hideToast()
 		x.className = '';
 	}, 1000);
 }
+
+function getParams()
+{
+	var sPageURL = window.location.search.substring(1);
+	var sURLVariables = sPageURL.split('&');
+	var sParameterName, i, params = {};
+
+	for (i = 0; i < sURLVariables.length; i++)
+	{
+		sParameterName = sURLVariables[i].split('=');
+		params[sParameterName[0]] = sParameterName[1];
+	}
+
+	return params;
+};
+
+function getParam(sParam)
+{
+	var sPageURL = window.location.search.substring(1);
+	var sURLVariables = sPageURL.split('&');
+	var sParameterName, i;
+
+	for (i = 0; i < sURLVariables.length; i++)
+	{
+		sParameterName = sURLVariables[i].split('=');
+
+		if (sParameterName[0] === sParam)
+		{
+			return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+		}
+	}
+
+	return false;
+};

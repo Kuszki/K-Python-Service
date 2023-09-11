@@ -53,6 +53,8 @@ class httpLogon:
 	STR_SUCCESS_LOGIN  = "Zalogowano do systemu"
 	STR_SUCCESS_LOGOUT = "Wylogowano z systemu"
 
+	QUERY_GETUSER = "SELECT id, admin, timeout FROM users WHERE name = %s AND pass = %s"
+
 	def __init__(self, dbconf):
 
 		self.timeout = timedelta(minutes = 5)
@@ -102,15 +104,14 @@ class httpLogon:
 
 			if type(passwd) == str: passwd = passwd.encode("utf-8")
 
-			passwd = sha256(passwd).hexdigest()
-			cur = self.database.cursor(buffered = True)
-
 			try:
-				query = "SELECT id, admin, timeout FROM users WHERE name = %s AND pass = %s";
-				cur.execute(query, (user, passwd))
-				rows = cur.fetchall()
+				pw = sha256(passwd).hexdigest()
+				cur = self.database.cursor(buffered = True)
+				cur.execute(self.QUERY_GETUSER, (user, pw))
+				print(cur.statement)
 
 			except: raise Exception(403, self.STR_ERROR_OTHER)
+			else: rows = cur.fetchall()
 			finally: cur.close()
 
 			if len(rows) != 1: raise Exception(403, self.STR_ERROR_PASSWD)
