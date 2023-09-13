@@ -1,0 +1,35 @@
+a
+{
+	text-decoration: none;
+}
+
+table
+{
+	border-collapse: collapse;
+	text-align: center;
+	min-width: 800px;
+	margin: auto;
+}
+
+table td, table th
+{
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	padding: 10px;
+}
+
+table tr:first-child th
+{
+	border-top: 0;
+}
+
+table tr:last-child td
+{
+	border-bottom: 0;
+}
+
+div.disabled > table
+{
+	pointer-events: none;
+	opacity: 0.5;
+}

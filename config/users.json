@@ -3,7 +3,12 @@
 	"/index.js",
 
 	"/browse.html",
+	"/browse.css",
 	"/browse.js",
+
+	"/prefs.html",
+	"/prefs.css",
+	"/prefs.js",
 
 	"/logout.var",
 

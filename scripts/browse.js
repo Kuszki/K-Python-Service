@@ -5,6 +5,11 @@ const errors =
 };
 
 const pages = {};
+var perpage = 50;
+
+var currPag = null;
+var dirTarget = '_self';
+var fileTarget = '_self';
 
 function onLoad()
 {
@@ -12,6 +17,12 @@ function onLoad()
 
 	const dirId = Number(getParam('dir'));
 	const docId = Number(getParam('doc'));
+	const itNum = Number(localStorage.getItem("itemsPerPage"));
+
+	if (Number(localStorage.getItem("openDirNew"))) dirTarget = '_blank';
+	if (Number(localStorage.getItem("openFileNew"))) fileTarget = '_blank';
+
+	if (itNum > 0) perpage = Math.ceil(itNum);
 
 	if (dirId) $.when($.getJSON(`/getcount.var?id=${dirId}`, onFilecount)).fail(showLoadFail);
 	else if (docId) $.when($.getJSON(`/getdoc.var?id=${docId}`, onFileshow)).fail(showLoadFail);
@@ -62,6 +73,7 @@ function appendDir(id, name, count, parent)
 	const ref = document.createElement('a');
 	ref.href = `/browse.html?dir=${id}`;
 	ref.text = name;
+	ref.target = dirTarget;
 
 	const add = document.createElement('a');
 	add.href = `/append.html?dir=${id}`;
@@ -79,7 +91,6 @@ function onFilecount(data)
 {
 	const list = document.getElementById('list');
 	const page = document.getElementById('page');
-	const MAX_COUNT = 100;
 
 	var pageId = Number(getParam('page'));
 	var dirId = Number(getParam('dir'));
@@ -88,7 +99,7 @@ function onFilecount(data)
 	else pageId = Math.max(1, pageId);
 
 	const count = Number(data);
-	const pMax = Math.ceil(count / MAX_COUNT);
+	const pMax = Math.ceil(count / perpage);
 
 	const prefix = document.createElement('text');
 	prefix.innerText = 'Strona ';
@@ -106,7 +117,7 @@ function onFilecount(data)
 	spin.onchange = function()
 	{
 		if (!spin.validity.valid) onError('range');
-		else onPagechange(spin.value, dirId, MAX_COUNT, spin, list);
+		else onPagechange(spin.value, dirId, perpage, spin, list);
 	}
 
 	page.innerHTML = '';
@@ -114,7 +125,7 @@ function onFilecount(data)
 	page.appendChild(spin);
 	page.appendChild(sufix);
 
-	onPagechange(pageId, dirId, MAX_COUNT, spin, list);
+	onPagechange(pageId, dirId, perpage, spin, list);
 }
 
 function onFilelist(data)
@@ -158,8 +169,8 @@ function appendFile(data, parent)
 
 	const ref = document.createElement('a');
 	ref.href = `/browse.html?doc=${id}`;
-	ref.target = '_blank';
 	ref.text = data[1];
+	ref.target = fileTarget;
 
 	for (var i = 0; i < data.length - 1; ++i)
 	{
@@ -176,7 +187,19 @@ function appendFile(data, parent)
 
 function onPagechange(id, dir, count, spin, tab)
 {
-	if (pages.hasOwnProperty(id)) return onFilelist(pages[id]);
+	const oldPag = currPag;
+
+	if (id == currPag) return;
+	else currPag = id;
+
+	const url = `/browse.html?dir=${dir}&page=${id}`;
+
+	if (pages.hasOwnProperty(id))
+	{
+		window.history.replaceState(null, null, url);
+		onFilelist(pages[id]); return;
+	}
+
 	const focus = document.activeElement == spin;
 
 	if (set_locked) return;
@@ -189,15 +212,11 @@ function onPagechange(id, dir, count, spin, tab)
 
 	$.when($.getJSON(`/getlist.var?id=${dir}&page=${id}&count=${count}`, function(data)
 	{
+		window.history.replaceState(null, null, url);
 		onFilelist(pages[id] = data);
 	}))
 	.done(function()
 	{
-		const nextURL = `/browse.html?dir=${dir}&page=${id}`;
-
-		window.history.pushState({}, document.title, nextURL);
-		window.history.replaceState({}, document.title, nextURL);
-
 		set_locked = false;
 		spin.disabled = false;
 		tab.className = '';

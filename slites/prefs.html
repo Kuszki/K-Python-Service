@@ -6,14 +6,14 @@
 		<meta name="Author" content='Łukasz "Kuszki" Dróżdż'>
 
 		<link rel="stylesheet" type="text/css" href="/main.css"/>
-		<link rel="stylesheet" type="text/css" href="/browse.css"/>
+		<link rel="stylesheet" type="text/css" href="/prefs.css"/>
 
 		<title>System zarządzania dokumentami</title>
 
 		<script src="https://code.jquery.com/jquery-latest.min.js"></script>
 
 		<script src="/main.js"></script>
-		<script src="/browse.js"></script>
+		<script src="/prefs.js"></script>
 
 		<script> $(document).ready(onLoad); </script>
 
@@ -21,7 +21,7 @@
 	<body>
 
 		<header>
-			<p>Podgląd obiektów</p>
+			<p>Ustawienia</p>
 			<nav>
 				<a href="javascript:void(0)" onclick="onLogout()">Wyloguj</a>
 			</nav>
@@ -42,14 +42,36 @@
 			</nav>
 		</menu>
 
-		<section>
-			<div id="list">
-				<info>Trwa ładowanie danych</info>
-			</div>
-		</section>
-
-		<section>
-			<div class="center" id="page"></div>
+		<section class="center">
+			<form id="prefs">
+				<table>
+					<tr>
+						<td><label for="pagenum">Liczba obiektów na stronę</label></td>
+						<td><input type="number" id="pagenum" name="pagenum" min="10" max="500" step="1" required></td>
+					</tr>
+					<tr>
+						<td><label for="folders">Otwieraj foldery w nowym oknie</label></td>
+						<td><select id="folders" name="folders">
+							<option value="1">Tak</option>
+							<option value="0">Nie</option>
+						</select></td>
+					</tr>
+					<tr>
+						<td><label for="files">Otwieraj pliki w nowym oknie</label></td>
+						<td><select id="files" name="files">
+							<option value="1">Tak</option>
+							<option value="0">Nie</option>
+						</select></td>
+					</tr>
+					<tr>
+						<td><label for="preview">Wyświetlaj podgląd dokumentu</label></td>
+						<td><select id="preview" name="preview">
+							<option value="1">Tak</option>
+							<option value="0">Nie</option>
+						</select></td>
+					</tr>
+				</table>
+			</form>
 		</section>
 
 		<footer id="toast"></footer>
