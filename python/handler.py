@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 from pathlib import Path
 
-import io, os, json, traceback, mimetypes
+import io, os, json, traceback, mimetypes, time
 
 class httpRequest: pass
 
@@ -181,6 +181,8 @@ class httpHandler(BaseHTTPRequestHandler):
 
 	def do_GET(self):
 
+		st = time.time()
+
 		try: cookies = SimpleCookie(self.headers.get("Cookie"))
 		except: cookies = dict()
 
@@ -213,6 +215,8 @@ class httpHandler(BaseHTTPRequestHandler):
 
 		except Exception as e: self.send_Error(e)
 		else: self.send_Slite(mime, resp, cok)
+
+		print("action: ", time.time() - st)
 
 	def do_POST(self):
 

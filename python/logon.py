@@ -57,8 +57,8 @@ class httpLogon:
 
 	def __init__(self, dbconf):
 
+		self.database = connect(**dbconf, autocommit = True)
 		self.timeout = timedelta(minutes = 5)
-		self.database = connect(**dbconf)
 		self.locker = RLock()
 		self.sessions = dict()
 
@@ -108,7 +108,6 @@ class httpLogon:
 				pw = sha256(passwd).hexdigest()
 				cur = self.database.cursor(buffered = True)
 				cur.execute(self.QUERY_GETUSER, (user, pw))
-				print(cur.statement)
 
 			except: raise Exception(403, self.STR_ERROR_OTHER)
 			else: rows = cur.fetchall()

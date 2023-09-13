@@ -32,6 +32,7 @@ server.handlers["/islogon.var"] = lambda u, p, d, c, i: ("text/plain", u.is_vali
 server.handlers["/getuser.var"] = lambda u, p, d, c, i: ("text/plain", u.name if u else i.name if i else str(), None)
 
 server.handlers["/getlist.var"] = lambda u, p, d, c, i: ("text/json", json.dumps(server.fsystem.getList(p), default = str), None)
+server.handlers["/getcount.var"] = lambda u, p, d, c, i: ("text/plain", server.fsystem.getCount(p), None)
 
 try: server.serve_forever()
 except KeyboardInterrupt: pass

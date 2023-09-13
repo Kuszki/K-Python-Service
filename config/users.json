@@ -6,5 +6,7 @@
 	"/browse.js",
 
 	"/logout.var",
-	"/getlist.var"
+
+	"/getlist.var",
+	"/getcount.var"
 ]
