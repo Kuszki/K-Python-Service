@@ -187,28 +187,32 @@ function appendFile(data, parent)
 
 function onPagechange(id, dir, count, spin, tab)
 {
+	if (set_locked) return;
+
 	const oldPag = currPag;
 
 	if (id == currPag) return;
 	else currPag = id;
-
-	const url = `/browse.html?dir=${dir}&page=${id}`;
+	
+	const url = `/browse.html?dir=${dir}&page=${id}&count=${count}`;
 
 	if (pages.hasOwnProperty(id))
-	{
+	{	
 		window.history.replaceState(null, null, url);
-		onFilelist(pages[id]); return;
+		onFilelist(pages[id]);
 	}
-
-	const focus = document.activeElement == spin;
-
-	if (set_locked) return;
 	else
 	{
-		set_locked = true;
-		spin.disabled = true;
+		spin.disabled = set_locked = true;
 		tab.className = 'disabled';
+		
+		requestPage(dir, id, count, spin, tab, url);
 	}
+}
+
+function requestPage(dir, id, count, spin, tab, url)
+{
+	const focus = document.activeElement == spin;
 
 	$.when($.getJSON(`/getlist.var?id=${dir}&page=${id}&count=${count}`, function(data)
 	{
@@ -217,16 +221,17 @@ function onPagechange(id, dir, count, spin, tab)
 	}))
 	.done(function()
 	{
-		set_locked = false;
-		spin.disabled = false;
+		spin.disabled = set_locked = false;
 		tab.className = '';
 
 		if (focus) spin.focus();
 	})
-	.fail(function()
+	.fail(function(msg)
 	{
-		spin.disabled = false;
-		onError('load');
+		spin.disabled = set_locked = false;
+		tab.className = '';
+		
+		showLoadFail(msg);
 	});
 }
 
@@ -235,7 +240,10 @@ function onFileshow(data)
 
 }
 
-function showLoadFail()
+function showLoadFail(msg)
 {
-	onError('load');
+	const list = document.getElementById('list'); onError('load');
+
+	if (!msg.hasOwnProperty('responseText')) list.innerText = errors['load'];
+	else list.innerText = errors['load'] + ": " + msg.responseText;
 }
